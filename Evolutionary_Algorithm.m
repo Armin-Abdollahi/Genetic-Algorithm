@@ -1,28 +1,42 @@
 function Evolutionary_Algorithm()
+
 clc
+
 %Input Parameters
-N=8;
-Pop_Size=30;
-Pc=0.7;
-Pm=0.3;
-Max_Gen=100;
+n=8;                                 %Number Of Queens
+popSize=30;                          %Population Size (Number Of Solutions In The Population)
+Pc=0.7;                              %Recombination Probability
+Pm=0.3;                              %Mutation Probability
+maxGen=199;                          %Maximum Number Of Generations
+
 %Variables
-Population=zeros(Pop_Size,N);
-Parents=zeros(Pop_Size,N);
-Offsprings=zeros(Pop_Size,N);
-Childs=zeros(Pop_Size,N);
-Fitnesses_1=zeros(1,Pop_Size);
-Fitnesses_2=zeros(1,Pop_Size);
-Gen_Num=0;
-Population=initialize(Pop_Size,N);
-Fitnesses_1=Evaluate(Population, Pop_Size,N);
-while (~Isterminate(Gen_Num,Max_Gen,Fitnesses_1))
-    Parents=Select_Parents(Population,Fitnesses_1,Pop_Size,N);
-    Offsprings=Recombination(Parents,Pop_Size,N,Pc);
-    Childs=mutation(Offsprings,Pop_Size,N,Pm);
-    Fitnesses_2=Evaluate(Childs,Pop_Size,N);
-    [Population,Fitnesses_1]=Replacement(Population,Childs,Fitnesses_1,Fitnesses_2,Pop_Size);
-    Output(Gen_Num,Fitnesses_1);
+population=zeros(popSize,n);
+parents=zeros(popSize,n);
+offsprings=zeros(popSize,n);
+childs=zeros(popSize,n);
+fitnesses1=zeros(1,popSize);         %Fitness Of Old Solutions
+fitnesses2=zeros(1,popSize);         %Fitness Of New Solutions (Childs)
+
+genNum=0;                                                            %Generation Number
+
+population=Initialize(popSize,n);                                    %Generate initial population
+fitnesses1=Evaluate(population, popSize,n);                          %Calculate the fitness of each individual (solution)
+while (~IsTerminate(genNum,maxGen,fitnesses1))                       %Check Termination Condition
+    parents=SelectParents(population,fitnesses1,popSize,n);          %Select Parent based on fitness values (Natural Selection)
+    offsprings=Recombination(parents,popSize,n,Pc);                  %Recombine [two] parents and generate [two] offsprings
+    childs=Mutation(offsprings,popSize,n,Pm);                        %Mutate offspring
+    fitnesses2=Evaluate(childs,popSize,n);                           %Calculate the fitness of new individuals (solutions)
+    [population,fitnesses1]=Replacement(population,childs,fitnesses1,fitnesses2,popSize);   %Select individuals for the next generation
+    genNum=genNum+1;                                                 %Increase Generation Number
+    Output(genNum,fitnesses1);                                       %Display Some Information
 end
+
+[maxValue, index]=max(fitnesses1);
+bestSol=population(index,:);
+fprintf('\n-------------------- Final Result --------------------');
+fprintf('\nBest Sol Fitness: %f\n', maxValue);
+fprintf('\nBest Sol: ');
+disp(bestSol);
+fprintf('-------------------- END --------------------\n');
 
 end
